@@ -1,18 +1,94 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import Jumbotron from "./components/Jumbotron";
+import Nav from "./components/Nav";
+import Input from "./components/Input";
+import SearchButton from "./components/Buttons";
+import API from "./utils/API";
+import { BookList, BookListItem } from "./components/BookList";
+import { Container, Row, Col } from "./components/Grid";
 
 class App extends Component {
+  state = {
+    books: [],
+    bookSearch: ""
+  };
+
+  handleInputChange = event => {
+    // Destructure the name and value properties off of event.target
+    // Update the appropriate state
+    const { name, value } = event.target;
+    this.setState({
+      [name]: value
+    });
+  };
+
+  handleFormSubmit = event => {
+    event.preventDefault();
+    API.getBooks(this.state.bookSearch)
+
+    .then(res => this.setState({ books: res.data }))
+      
+      .catch(err => console.log(err));
+      
+  };
+
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
+        <Nav />
+        <Jumbotron />
+        <Container>
+          <Row>
+            <Col size="md-12">
+              <form>
+                <Container >
+                  <Row > 
+                    <Col size="xs-9 sm-10">
+                      <Input
+                        name="bookSearch"
+                        value={this.state.bookSearch}
+                        onChange={this.handleInputChange}
+                        placeholder="Search For a Book"
+                      />
+                    </Col>
+                    <Col size="xs-3 sm-2">
+                      <SearchButton
+                        onClick={this.handleFormSubmit}
+                        type="info"
+                        className="input-lg"
+                      >
+                        Search
+                      </SearchButton>
+                    </Col>
+                  </Row>
+                </Container>
+              </form>
+            </Col>
+          </Row>
+          <br></br>
+          <Row>
+            <Col size="xs-12">
+              {!this.state.books.length ? (
+                <h1 className="text-center">No Books to Display</h1>
+              ) : (
+                <BookList>
+                  {this.state.books.map(book => {
+                    return (
+                      <BookListItem
+                        key={book.id}
+                        title={book.volumeInfo.title}
+                        href={book.volumeInfo.infoLink}
+                        description={book.volumeInfo.description}
+                        author={book.volumeInfo.authors}
+                        thumbnail={book.volumeInfo.imageLinks.thumbnail}
+                      />
+                    );
+                  })}
+                </BookList>
+              )}
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }
