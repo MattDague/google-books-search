@@ -18,7 +18,7 @@ export function SaveButton({ type = "default", className, children, onClick }) {
 export function ViewButton({href}) {
   return (
     
-    <a href={href}  target="_blank" rel="noopener noreferrer" className="btn btn-success text-right float-right mx-2">
+    <a href={href}  target="_blank" className="btn btn-success text-right float-right mx-2">
       View
     </a>
   );
